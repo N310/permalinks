@@ -7,9 +7,10 @@ class ScrapingController < ApplicationController
   def new
     charset = nil
     page_no = 1
-    @url_data = []
-    # スクレイピング先のURL
-    url = "https://310nae.com/page/#{page_no}"
+    @path_data = []
+    @host = "https://310nae.com"
+    url = "#{@host}/page/#{page_no}"
+    link_selecter = ".post-list a"
 
     begin
       while true
@@ -21,14 +22,16 @@ class ScrapingController < ApplicationController
         # htmlをパース(解析)してオブジェクトを生成
         doc = Nokogiri::HTML.parse(html, nil, charset)
 
-        post_links = doc.css(".post-list a")
+        post_links = doc.css(link_selecter)
         post_links.each do |post_link|
-          @url_data.push(post_link.attributes["href"].value)
+          path = post_link.attributes["href"].value.gsub(/#{@host}/, "")
+          @path_data.push(path)
         end
 
         page_no += 1
-        url = "https://310nae.com/page/#{page_no}"
+        url = "#{@host}/page/#{page_no}"
       end
+
     rescue OpenURI::HTTPError => error
     end
   end
