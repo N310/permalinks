@@ -1,25 +1,30 @@
 class ScrapingController < ApplicationController
-  # URLにアクセスするためのライブラリの読み込み
   require 'open-uri'
-  # Nokogiriライブラリの読み込み
   require 'nokogiri'
 
   def new
+    @host = ""
+    @path_data = []
+  end
+
+  def create
+    # byebug
     charset = nil
     page_no = 1
     @path_data = []
-    @host = "https://310nae.com"
-    url = "#{@host}/page/#{page_no}"
-    link_selecter = ".post-list a"
+
+    # サイトのURLを記入してください
+    @host = info_params[:url]
+    # 投稿ページのリンクのセレクタを記入してください
+    link_selecter = info_params[:selector]
 
     begin
+      url = "#{@host}/page/#{page_no}"
       while true
         html = open(url) do |f|
-          charset = f.charset # 文字種別を取得
-          f.read # htmlを読み込んで変数htmlに渡す
+          charset = f.charset
+          f.read
         end
-
-        # htmlをパース(解析)してオブジェクトを生成
         doc = Nokogiri::HTML.parse(html, nil, charset)
 
         post_links = doc.css(link_selecter)
@@ -32,7 +37,16 @@ class ScrapingController < ApplicationController
         url = "#{@host}/page/#{page_no}"
       end
 
+      render action: "new"
+
     rescue OpenURI::HTTPError => error
+      render action: "new"
     end
+  end
+
+  private
+
+  def info_params
+    params.permit(:url, :selector)
   end
 end
