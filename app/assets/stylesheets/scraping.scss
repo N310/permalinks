@@ -1,6 +1,11 @@
 body {
   background-color: #fafafa;
 }
+form {
+  .spinner-geturl {
+    display: none;
+  }
+}
 .tab-pane {
   border: 1px solid #dee2e6;
   border-top: none;

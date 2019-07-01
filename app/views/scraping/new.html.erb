@@ -9,6 +9,7 @@
     <div class="container">
       <p class="lead">WordPressでパーマリンクを変更したい場合など、投稿記事の全URLが必要なときにご利用ください。</p>
       <p class="lead">URLのみのものと、リダイレクト設定の記述がセットになったものと２種類ダウンロードできます。</p>
+      <small>取得に時間がかかる場合もあります。その際は<a href="https://310nae.com" target="blank">こちら</a>のブログでもご覧ください( ˘ω˘ )</small>
     </div>
   </div>
 
@@ -32,6 +33,10 @@
         <%= form.text_field :selector, id:"selector", placeholder: ".post-list a", class: "form-control" %>
       </div>
       <%= form.submit '一括取得', name: nil, class:'btn btn-primary' %>
+      <button class="btn btn-primary spinner-geturl" type="button" disabled>
+        取得中...
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      </button>
     <% end %>
 
     <% if @path_data.present? %>
