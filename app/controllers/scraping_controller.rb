@@ -3,44 +3,40 @@ class ScrapingController < ApplicationController
   require 'nokogiri'
 
   def new
-    @host = ""
-    @path_data = []
-  end
+    if info_params.present?
+      charset = nil
+      page_no = 1
+      @path_data = []
+      @host = info_params[:url].gsub(/(.*[^\/])\/?$/, '\1')
+      link_selecter = info_params[:selector]
 
-  def create
-    # byebug
-    charset = nil
-    page_no = 1
-    @path_data = []
-
-    # サイトのURLを記入してください
-    @host = info_params[:url]
-    # 投稿ページのリンクのセレクタを記入してください
-    link_selecter = info_params[:selector]
-
-    begin
-      url = "#{@host}/page/#{page_no}"
-      while true
-        html = open(url) do |f|
-          charset = f.charset
-          f.read
-        end
-        doc = Nokogiri::HTML.parse(html, nil, charset)
-
-        post_links = doc.css(link_selecter)
-        post_links.each do |post_link|
-          path = post_link.attributes["href"].value.gsub(/#{@host}/, "")
-          @path_data.push(path)
-        end
-
-        page_no += 1
+      begin
         url = "#{@host}/page/#{page_no}"
+        while true
+          html = open(url) do |f|
+            charset = f.charset
+            f.read
+          end
+          doc = Nokogiri::HTML.parse(html, nil, charset)
+
+          post_links = doc.css(link_selecter)
+          post_links.each do |post_link|
+            path = post_link.attributes["href"].value.gsub(/#{@host}(.*[^\/])\/?$/, '\1')
+            @path_data.push(path)
+          end
+
+          page_no += 1
+          url = "#{@host}/page/#{page_no}"
+        end
+        render action: "new"
+
+      rescue OpenURI::HTTPError => error
+        render action: "new"
       end
 
-      render action: "new"
-
-    rescue OpenURI::HTTPError => error
-      render action: "new"
+    else
+      @host = ""
+      @path_data = []
     end
   end
 

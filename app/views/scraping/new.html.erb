@@ -1,21 +1,55 @@
-<h1>投稿記事のリンク一括取得</h1>
-<p>WordPressでパーマリンクを変更したい場合など、投稿記事の全URLが必要なときにご利用ください。</p>
-<p>URLのみのものと、リダイレクト設定の記述がセットになったものと２種類ダウンロードできます。</p>
+<header>
+  <nav class="navbar navbar-dark bg-dark">
+    <h1 class="navbar-brand mb-0 mx-auto h1">投稿記事のリンク一括取得</h1>
+  </nav>
+</header>
 
-<%= form_with url: get_url_path, local: true, class: "form" do |form| %>
-  <div class="form-content">
-    <label for="url" class="form-label">TOPページのURL</label>
-    <%= form.text_field :url, id:"url", placeholder: "https://example.com", class: "form-input" %>
+<main>
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <p class="lead">WordPressでパーマリンクを変更したい場合など、投稿記事の全URLが必要なときにご利用ください。</p>
+      <p class="lead">URLのみのものと、リダイレクト設定の記述がセットになったものと２種類ダウンロードできます。</p>
+    </div>
   </div>
-  <div class="form-content">
-    <label for="selector" class="form-label">投稿記事 aタグのセレクタ</label>
-    <%= form.text_field :selector, id:"selector", placeholder: ".post-list a", class: "form-input" %>
-  </div>
-  <%= form.submit '一括取得', name: nil, class:'button' %>
-<% end %>
 
-<div>
-  <% @path_data.each do |path|  %>
-    <span>redirect 301 <%= path %> <%= @host %>/newURL</span><br>
+  <%= form_with url: root_path, local: true, class: "form m-5" do |form| %>
+    <div class="form-group">
+      <label for="url" class="form-label">TOPページのURL</label>
+      <%= form.text_field :url, id:"url", placeholder: "https://example.com", class: "form-control" %>
+    </div>
+    <div class="form-group">
+      <label for="selector" class="form-label">投稿記事 aタグのセレクタ</label>
+      <%= form.text_field :selector, id:"selector", placeholder: ".post-list a", class: "form-control" %>
+    </div>
+    <%= form.submit '一括取得', name: nil, class:'btn btn-primary' %>
   <% end %>
-</div>
+
+  <% if @path_data.present?  %>
+    <div class="m-5">
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">URLのみ</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">リダイレクト設定</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade p-3 show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+          <% @path_data.each do |path|  %>
+            <span><%= @host %><%= path %></span><br>
+          <% end %>
+        </div>
+        <div class="tab-pane fade p-3" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+          <% @path_data.each do |path|  %>
+            <span>redirect 301 <%= path %> <%= @host %>/newURL</span><br>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</main>
+
+<footer class="bg-dark  mt-5">
+  <p class="text-center mb-0 text-white p-3">© 2019 <a href="https://310nae.com" class="text-white">Nae Sato</a>. All Rights Reserved.</p>
+</footer>
