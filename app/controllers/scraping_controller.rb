@@ -7,8 +7,14 @@ class ScrapingController < ApplicationController
       charset = nil
       page_no = 1
       @path_data = []
+      @errors = []
+
+      @errors.push("TOPページのURLを正しい形式で入力してください。") if info_params[:url].match(%r{https?://[\w.-]+\/?$}).nil?
+      @errors.push("投稿記事 aタグのセレクタを入力してください。") if info_params[:selector].blank?
+      return render action: "new" if @errors.present?
+
       @host = info_params[:url].gsub(/(.*[^\/])\/?$/, '\1')
-      link_selecter = info_params[:selector]
+      @link_selecter = info_params[:selector]
 
       begin
         url = "#{@host}/page/#{page_no}"
@@ -19,7 +25,7 @@ class ScrapingController < ApplicationController
           end
           doc = Nokogiri::HTML.parse(html, nil, charset)
 
-          post_links = doc.css(link_selecter)
+          post_links = doc.css(@link_selecter)
           post_links.each do |post_link|
             path = post_link.attributes["href"].value.gsub(/#{@host}(.*[^\/])\/?$/, '\1')
             @path_data.push(path)
@@ -31,12 +37,9 @@ class ScrapingController < ApplicationController
         render action: "new"
 
       rescue OpenURI::HTTPError => error
+        @no_data = true if @path_data.length
         render action: "new"
       end
-
-    else
-      @host = ""
-      @path_data = []
     end
   end
 
