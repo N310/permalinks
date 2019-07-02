@@ -1,6 +1,6 @@
 $(function() {
   $('input[type=submit]').on('click', function(){
-    $('.alert').hide();
+    $('#js-validation').hide();
     $(this).hide();
     $('.spinner-geturl').show();
   });
