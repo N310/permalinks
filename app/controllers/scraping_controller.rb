@@ -16,6 +16,9 @@ class ScrapingController < ApplicationController
       @host = info_params[:url].gsub(/(.*[^\/])\/?$/, '\1')
       @link_selecter = info_params[:selector]
 
+      Rails.logger.info "[URL] #{info_params[:url]} : #{@host}"
+      Rails.logger.info "[Selecter] #{@link_selecter}"
+
       begin
         url = "#{@host}/page/#{page_no}"
         while true
